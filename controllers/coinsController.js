@@ -56,8 +56,11 @@ module.exports = {
     try {
       const { page, size, title } = req.body;
       var condition = title
-        ? { title: { $regex: new RegExp(title), $options: "i" } }
+        ? { name: { $regex: new RegExp(title), $options: "i" } }
         : {};
+      // var condition = title
+      //   ? { name: title }
+      //   : {};
 
       const { limit, offset } = getPagination(page, size);
 
