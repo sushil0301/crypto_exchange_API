@@ -5,6 +5,7 @@ const request = require('request-promise');
 const getPagination = (page, size) => {
   const limit = size ? +size : 3;
   const offset = page ? page * limit : 0;
+
   return { limit, offset };
 };
 module.exports = {
@@ -53,11 +54,21 @@ module.exports = {
   async getAllRecord(req, res) {
 
     try {
-      let getAllRecord = await db.coin_details.mongoosePaginate({}, {
-        offset: 0, limit: 10
-      });
-      if (getAllRecord && getAllRecord.length) {
-        res.status(200).send({ res: '1', message: 'success.', data: getAllRecord });
+      const { page, size, title } = req.body;
+      var condition = title
+        ? { title: { $regex: new RegExp(title), $options: "i" } }
+        : {};
+
+      const { limit, offset } = getPagination(page, size);
+
+      let getAllRecord = await db.coin_details.paginate(condition, { offset, limit });
+      if (getAllRecord) {
+        res.status(200).send({
+          res: '1', message: 'success.', totalItems: getAllRecord.totalDocs,
+          data: getAllRecord.docs,
+          totalPages: getAllRecord.totalPages,
+          currentPage: getAllRecord.page - 1,
+        });
 
       }
     } catch (error) {

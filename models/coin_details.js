@@ -1,4 +1,4 @@
-module.exports = mongoose => {
+module.exports = (mongoose, mongoosePaginate) => {
   var schema = mongoose.Schema(
     {
       exchange_id: String,
@@ -14,7 +14,7 @@ module.exports = mongoose => {
     object.id = _id;
     return object;
   });
-
+  schema.plugin(mongoosePaginate);
   const coin_details = mongoose.model("coin_details", schema);
   return coin_details;
 };
